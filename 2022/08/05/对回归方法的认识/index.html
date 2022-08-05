@@ -1,0 +1,423 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>对回归方法的认识 | 剑来</title><meta name="keywords" content="线性回归&amp;&amp;批量梯度下降"><meta name="author" content="Gomid"><meta name="copyright" content="Gomid"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="从离散的统计数据中得到数学模型，然后将该数学模型用于预测或者分类。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对回归方法的认识">
+<meta property="og:url" content="https://mashirokanon.github.io/2022/08/05/%E5%AF%B9%E5%9B%9E%E5%BD%92%E6%96%B9%E6%B3%95%E7%9A%84%E8%AE%A4%E8%AF%86/index.html">
+<meta property="og:site_name" content="剑来">
+<meta property="og:description" content="从离散的统计数据中得到数学模型，然后将该数学模型用于预测或者分类。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mashirokanon.github.io/img/MashiroKanon1.webp">
+<meta property="article:published_time" content="2022-08-05T08:14:36.000Z">
+<meta property="article:modified_time" content="2022-08-05T10:12:38.733Z">
+<meta property="article:author" content="Gomid">
+<meta property="article:tag" content="线性回归&amp;&amp;批量梯度下降">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mashirokanon.github.io/img/MashiroKanon1.webp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mashirokanon.github.io/2022/08/05/%E5%AF%B9%E5%9B%9E%E5%BD%92%E6%96%B9%E6%B3%95%E7%9A%84%E8%AE%A4%E8%AF%86/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta/><link rel="manifest" href="/img/pwa/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/img/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/pwa/16.png"/><link rel="mask-icon" href="/img/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '对回归方法的认识',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-08-05 18:12:38'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/MashiroKanon1.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> -音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> -电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/cover5.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">剑来</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> -音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> -电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">对回归方法的认识</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-05T08:14:36.000Z" title="发表于 2022-08-05 16:14:36">2022-08-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-08-05T10:12:38.733Z" title="更新于 2022-08-05 18:12:38">2022-08-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/machine-learning/">machine learning</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="对回归方法的认识"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1>监督学习(Supervise learning)</h1>
+<p>符号定义：</p>
+<p><strong>输入特征：$x^{(i)}$</strong>，比如房屋面积，</p>
+<p><strong>目标变量：</strong>$y^{(i)}$，比如房屋价格，</p>
+<p><strong>训练样本：</strong>$(x^{(i)},y^{(i)})$</p>
+<p><strong>训练集</strong>：让机器来学习的数据集，就是一个长度为m的训练样本的列表：${(x^{(i)},y^{(i)});i=1,…,m}$</p>
+<p>上标(i)在这里只作为训练集的索引记号。</p>
+<p><strong>假设(hypothesis)</strong>：即函数h，X→Y，h(x)是一个对应的真实的y值比较接近的评估值。</p>
+<p>如果我们要预测的目标变量Y是连续的，这种学习问题就被称为回归问题；</p>
+<p>我们要预测的Y只能取一小部分的离散的值，这类问题被称为分类问题。</p>
+<h1>线性回归</h1>
+<p>我们给输入特征增加维度的概念，$x_1^{(i)}$表示训练集中第一个特征的第i个训练样本的值。</p>
+<p>现在考虑一个二维输入特征的情况：</p>
+<p>$h_\theta(x)=\theta_0+\theta_1x_1+\theta_2x_2$</p>
+<p>$\theta_i$是<strong>参数</strong>，或叫<strong>权重</strong>，是从X到Y的线性函数映射的空间参数。</p>
+<p>设$x_0=1$，这样我们就有</p>
+<p>$h(x)=\sum_{i=0}^n\theta_ix_i=\theta^Tx$</p>
+<p>这里的n表示的不是样本的长度，而是样本输入特征的维度。</p>
+<h2 id="成本函数">成本函数</h2>
+<p>有了训练集，有了假设，那么如何挑选参数使得h(x)尽可能逼近y呢？</p>
+<p>我们就需要定义一个成本函数(cost function)、损失函数(loss function)</p>
+<p>$J(\theta)=\frac{1}{2}\sum_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})^2$</p>
+<p>目的是$\min\limits_\theta\ J_{\theta}$</p>
+<p>J函数有两个要注意的点：1/2和差值平方。</p>
+<p>1/2是为了在求导时抹掉系数。</p>
+<h1>最小均方算法</h1>
+<h2 id="梯度下降法">梯度下降法</h2>
+<p>梯度下降法是求极小值问题的一个解法，但是梯度下降法最大的问题是求得的有可能是局部最小值，这与初始点的选取有关。</p>
+<p>梯度下降法的流程是：</p>
+<ol>
+<li>首先对$\theta$赋值，这个值可以是随机的，也可以是一个全零的向量，</li>
+<li>改变$\theta$的值，使得$J(\theta)$按梯度下降的方向进行减少。</li>
+</ol>
+<p>$\theta_j = \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta)$</p>
+<p>损失函数中的$\theta$是完整维度的，$J(\theta)$是使得所有维度，所有样本量的差值最小的一个函数。但是在更新中的$\theta$，却是每次只能更新一个维度。所以我们这个方程重复n次，即x的每个维度都要照顾到。</p>
+<p>$\alpha$在这里被称为<strong>学习速率</strong>。</p>
+<p>考虑只有一个样本(x,y)的情况，这样我们不需要在考虑损失函数中的m个样本量的求和。</p>
+<p>$$<br>
+\frac{\partial}{\partial\theta_j}J(\theta)=\frac{\partial}{\partial\theta_j}\frac{1}{2}(h_\theta(x)-y)^2\=(h_\theta(x)-y)x_j<br>
+$$</p>
+<p>$\theta_j = \theta_j +\alpha(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}$</p>
+<p>这个结果也称为LMS更新规则(least mean squares)，即最小均方。</p>
+<p>每次更新的大小与y-h的差额成正比，因此如果预测值与y相差不大，就不需要更改参数了，但反之，如果有很大误差，则需要更改参数。</p>
+<h3 id="批量梯度下降法">批量梯度下降法</h3>
+<p>在每一个步长内检查所有整个训练集中的所有样本。</p>
+<p>当训练集的训练样本有m个时 ,重复直到收敛{</p>
+<p>$\theta_j = \theta_j +\alpha\sum^m_{i=1}(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}\ \ \ \ \  for \ every\ j$</p>
+<p>}</p>
+<p>J是一个凸的二次函数，下面是一个梯度下降的例子，</p>
+<img width = '500' height = '180' src ="/pictures/对回归方法的认识/梯度下降.png">
+<h3 id="随机梯度下降法">随机梯度下降法</h3>
+<p>Loop {</p>
+<p>for i=1 to m, {</p>
+<p>$\theta_j = \theta_j + \alpha(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}\ \ \ \ \ \ \ for\ every\ j$</p>
+<p>}</p>
+<p>}</p>
+<p>在这里，每次遇到一个训练样本，都会根据单一训练样本的误差梯度来对参数进行更新，这种算法叫随机梯度下降法。</p>
+<p>批量梯度下降法要在运行第一步之前对整个训练集进行扫描便利，所以当训练集的规模m很大时，会带来较大的性能开销。</p>
+<p>而随机梯度下降法则没有这个缺点，而是可以立即开始。</p>
+<p>所以更推荐使用随机梯度下降法。</p>
+<h1>法方程</h1>
+<p>另一种找到J函数最小值的方法是直接进行矩阵运算，求出对应导数为0时的$\theta_j$。</p>
+<h1>最小二乘法(Least squares)</h1>
+<p>给定一个训练集，<strong>设计矩阵(design matrix)X</strong>设置为一个m<em>n矩阵（如果考虑到截距项，就是m</em>(n+1)），m是样本集的长度，n是样本特征的个数。</p>
+<p>法线方程(normal equations)</p>
+<p>$X^TX\theta = X^T\vec y$</p>
+<p>所以让J取最小值的$\theta$就是$\theta=(X^TX)^{-1}X^T\vec y$</p>
+<p>此方法要求X是列满秩的。</p>
+<h1>概率解释</h1>
+<p>首先假设目标变量和输入值存在以下关系</p>
+<p>$$<br>
+y^{(i)}=\theta^Tx^{(i)}+\epsilon^{(i)} \tag 1<br>
+$$</p>
+<p>在这里\epsilon是误差项，并进一步假设其是独立同分布的且服从于均值为0，方差为\sigma^2的高斯分布，这样\epsilon的密度函数为</p>
+<p>$$<br>
+f(\epsilon^{(i)})=\frac{1}{\sqrt{2\pi}\sigma}exp(-\frac{(\epsilon^{(i)})^2}{2\sigma^2}) \tag2<br>
+$$</p>
+<p>将方程1等式带入方程2，我们可以得到</p>
+<p>$Y^{(i)}|x^{(i)};\theta\ \sim\ N(\theta^Tx^{(i)},\sigma^2)$</p>
+<p>我们把它看作是\theta的函数时，可以称他为似然函数</p>
+<p>$L(\theta)=L(\theta;X,\vec y)=p(\vec y)$</p>
+<p>最大似然法告诉我们的是要选择能让数据的似然函数尽可能最大的$\theta$。</p>
+<p>通过推导，</p>
+<p>$l(\theta)=log\ L(\theta)=m\ log\frac{1}{\sqrt{2\pi}\sigma}-\frac{1}{sigma^2}\cdot \frac{1}{2}\sum^m_{i=1}(y^{(i)-\theta^Tx^{(i)}})^2$</p>
+<p>因此，对$l(\theta)$的最大值也意味着$\frac{1}{2}\sum^m_{i=1}(y^{(i)-\theta^Tx^{(i)}})^2$，这个式子就是$J(\theta)$</p>
+<p>总结一下，在对数据进行概率假设的基础上，最小二乘回归得到的\theta和最大似然估计法得到的\theta是一致的。</p>
+<h1>局部加权线性回归</h1>
+<img width = '500' height = '150' src ="/pictures/对回归方法的认识/欠拟合与过拟合.png">
+<p>第一张图是一个**欠拟合(under fitting)**的例子,</p>
+<p>第三张图是一个**过拟合(over fitting)**的例子。</p>
+<p>这就需要用到局部加权线性回归(LWR)的方法，这个方法是假设有足够多的训练数据，对不太重要的特征进行一些筛选。</p>
+<p>在LWR中</p>
+<ol>
+<li>使用参数$\theta$进行拟合，让加权距离$w^{(i)}(y^{(i)}-\theta^Tx^{(i)})^2$最小，</li>
+<li>输出$\theta^Tx$。</li>
+</ol>
+<p>$w^{(i)}$是非负的权值，如果对应某个i的权值$w^{(i)}$特别大，那么选择拟合参数$\theta$时，就要尽量让$(y^{(i)}-\theta^Tx^{(i)})^2$小一些；如果权值w^特别小，那么对应的$(y^{(i)}-\theta^Tx^{(i)})^2$就基本在拟合过程中忽略掉了。</p>
+<p>关于权值的选择可以用</p>
+<p>$w^{(i)}=exp(-\frac{(x^{(i)}-x)^2}{2r^2})$</p>
+<p>如果$|x^{(i)}-x|$非常小，那么权值就接近1；如果$|x^{(i)}-x|$非常大，那么权值就会变小。换句话说，$\theta$的选择过程中，查询点x附近的训练样本有更高的权值。</p>
+<p>参数\tau控制了参数降低的速度，也叫<strong>带宽参数。</strong></p>
+<p>无权重的线性回归算法是一种参数学习算法，</p>
+<p>有权重的线性回归算法是一种非参数算法。</p>
+<h1>逻辑回归</h1>
+<p>确定$y\in{0,1}$，就是说y必然应当是0和1的一个，所以就可以改变一下假设函数$h_\theta(x)$的形式来解决这个问题</p>
+<p>$h_\theta(x)=g(\theta^Tx)=\frac{1}{1+e^{-\theta^Tx}}$</p>
+<p>g(z)叫做逻辑函数(logistic function)，或者叫双弯曲S型函数(sigmoid function)。</p>
+<img width = '500' height = '200' src ="/pictures/对回归方法的认识/logistic model.png">
+<p>$g’(z)=g(z)(1-g(z))$</p>
+<p>假设</p>
+<p>$p(y=1|x;\theta)=h_\theta(x)$</p>
+<p>$p(y=0|x;\theta)=1-h_\theta(x)$</p>
+<p>或者说</p>
+<p>$P(y|x;\theta)=(h_\theta(x))^y(1-h_\theta(x))^(1-y)$</p>
+<p>假设m个训练样本是各自独立生成的，那么</p>
+<p>$L(\theta)=\prod_{i=1}^m(h_\theta(x^{(i)}))^{y^{(i)}}(1-h_\theta(x^{(i)}))^(1-y^{(i)})$</p>
+<p>如何要让似然函数最大呢？这里采用<strong>梯度上升法</strong>，对似然函数求导得到$\frac{\partial}{\partial \theta_j}l(\theta) = (y-h_\theta(x))x_j$</p>
+<p>根据我们之前讨论的，我们要使似然函数最大，每一步的大小由导数决定，因此我们得到了随机梯度上升的规则</p>
+<p>$\theta_j = \theta_j+\alpha(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}$</p>
+<p>这与LMS并不是同一个算法，因为这里的假设函数h是一个非线性函数。</p>
+<h1>感知器学习算法</h1>
+<p>与逻辑回归相比，这里改变了g的定义，使其成为一个阈值函数(threshold function)。</p>
+<p>$g(z)=1\ \ if \ z\geq0$</p>
+<p>$\ \ \ \ =0\ if\ z&lt;0$</p>
+<p>更新规则为</p>
+<p>$\theta_j = \theta_j+\alpha(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}$</p>
+<h1>牛顿法解最大似然估计</h1>
+<p>仍然假设S型函数g(z)来进行逻辑回归的情况。</p>
+<p><strong>牛顿法</strong>是当我们要找$f(\theta)=0$时，我们就对$\theta$作如下更新</p>
+<p>$\theta = \theta-\frac{f(\theta)}{f’(\theta)}$</p>
+<p>图解为<br>
+<img width = '500' height = '150' src ="/pictures/对回归方法的认识/牛顿法.png"></p>
+<p>斜率$f’(\theta)=\frac{f(\theta)}{\Delta}$</p>
+<p>从牛顿法我们得到启发，如果我们想找似然函数的最大值，就要找似然函数的导数为0的时候的$\theta$值，于是我们得到标量的更新规则</p>
+<p>$\theta = \theta-\frac{l’(\theta)}{l’’(\theta)}$</p>
+<p>下面我们扩展到向量形式，也叫<strong>牛顿-拉普森法</strong></p>
+<p>$\theta = \theta - H^{-1}\nabla_\theta l(\theta)$</p>
+<p>$\nabla_\theta l(\theta)$是$l(\theta)$对偏导数向量，而H是一个n<em>n的矩阵（如果包括截距项的话，应该是(n+1)</em>(n+1)）</p>
+<p>$H_{ij}=\frac{\partial^2l(\theta)}{\partial \theta_i \partial \theta_j}$</p>
+<p>牛顿法通常比（批量）梯度下降法收敛得更快，而且达到最小值所需要的迭代次数也少很多。但是牛顿法的单次迭代中往往要比梯度下降法的单步消耗更多的性能。 但只要n不是很大，牛顿法还是有优势的。</p>
+<h1>广义线性模型</h1>
+<h2 id="指数族">指数族</h2>
+<p>如果一个分布能用下面的方式来写出来，我们就说这类分布属于指数族</p>
+<p>$p(y;\eta)=b(y)exp(\eta^TT(y)-a(\eta))$</p>
+<p>$\eta$叫做次分布的自然参数，</p>
+<p>T(y)叫做充分统计量，它与$\eta$具有同一个维度，</p>
+<p>b(y)是一个基础特征(base measure)，</p>
+<p>a($\eta$)是一个对数分割函数。</p>
+<p>指数族满足以下特征，</p>
+<ol>
+<li>
+<p>MLE with respect to $\eta$ is concave</p>
+<p>NLL(negative log-likelihood) is convex</p>
+</li>
+<li>
+<p>$E[y;\eta]=\frac{\partial}{\partial \eta}a(\eta)$</p>
+</li>
+<li>
+<p>$Var[y;\eta]=\frac{\partial^2}{\partial \eta^2}a(\eta)$</p>
+</li>
+</ol>
+<p>我们之前的函数：伯努利分布和高斯分布均属于指数分布族，除此之外，多项式分布，泊松分布，$\gamma$和指数分布，$\beta$和狄利克雷分布都属于指数分布族。</p>
+<aside>
+💡 如何恰当选择分布？
+</aside>
+<p>通常情况下，实际值数据使用高斯分布；二进制数据，使用伯努利分布；如果计数非负整数，则使用泊松分布；如果是正实数，使用$\Gamma$或指数分布；如果是概率分布，则使用\beta和狄利克雷分布，这两个主要出现在贝叶斯机器学习和贝叶斯统计中。</p>
+<h2 id="构建广义线性模型">构建广义线性模型</h2>
+<p>三个假设</p>
+<ol>
+<li>$y|x;\theta\ \sim\ Exponential \ Family(\eta)$，即给定x和\theta，y的分布属于指数分布族，是一个参数为$\eta$的指数分布。</li>
+<li>给定x，目的是预测的假设h的值要尽可能接近给定x的T(y)的期望值。大多数例子中T(y)=y，所以要满足$h_\theta(x)=E[y|x;\theta]$</li>
+<li>自然参数\eta和输入值x是线性相关的，$\eta=\theta^Tx$。</li>
+</ol>
+<img width = '500' height = '200' src ="/pictures/对回归方法的认识/广义线性模型.png">
+<p>Learning update rule.</p>
+<p>$$<br>
+\theta_j = \theta_j+\alpha(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}<br>
+$$</p>
+<p>根据指数族的特征2，$\mu=E[y;\eta]=g(\eta)=\frac{\partial}{\partial \eta}a(\eta)$ ，这个式子有一个名字叫<strong>规范响应函数</strong>。它的反函数，$\eta=g^{-1}(\mu)$，被称作<strong>规范链接函数</strong>。</p>
+<p>回顾一下，我们一共有三种参数：</p>
+<p>一种是模型参数：$\theta$，这是我们训练的</p>
+<p>一种是自然参数：$\eta$，通过\theta^Tx，自然参数由模型参数线性给出，这就是我们做的设计选择。</p>
+<p>还有一种是规范参数：$\phi$ - 伯努利分布，$\mu\sigma^2$ - 高斯分布，$\lambda$ - 泊松分布，规范参数通过规范响应函数g和规范链接函数g^{-1}与自然参数互相给出。</p>
+<p>我的理解是，每一个$\theta$都会形成自己的分割超平面，然后对于横轴上的每一个x，都会形成自己的分布方式，这是一个理想化的情况。然后第二张图是实际的样本的分布情况，将第一张图的理想化的分布图拿过来，看这些样本的拟合情况，对$\theta$进行修正并找到最好的那个$\theta$。</p>
+<p>Sigmoid模型是把所有的点都压缩在(0,1)之间了，然后再根据训练样本的点的分布来修正$\theta$。</p>
+<p>注意，不管是高斯分布也好，还是Sigmoid也好，第一幅图和第三幅图它们都只有一套坐标轴。</p>
+<p>说白了其实还是上面那个流程图，只不过图形化了而已。</p>
+<h2 id="Softmax回归">Softmax回归</h2>
+<p>如果相应变量y不是二元的，而是多元的，那么我们就要用到多项式分布。</p>
+<p>此时的T(y)不再是y，而是一个具有k-1维的向量，k是y的输出值的种类数。</p>
+<img width = '700' height = '150' src ="/pictures/对回归方法的认识/softmax结果.png">
+<p>这时，有k个不同$\theta$分属于不同的类。我们之前有提到，sigmoid的二元选择只有1（=2-1）个$\theta$，那么为什么多元情况下就有k个不同类了呢？</p>
+<p>一个$\theta$相当于一个分割的线。如果我们想将三个类分开，那么需要三条线才可以完全将他们分开。</p>
+<img width = '500' height = '350' src ="/pictures/对回归方法的认识/softmax回归.png">
+<p>假设函数输出所有类的概率的分布情况，就是第三张图。</p>
+<p>我们的目的是让第三张图与第四张图尽可能接近，也就是使两个分布之间的交叉熵最小。</p>
+<p>$$<br>
+Cross \ Ent(p,\hat p)=-\sum_{y\in class}p(y)log\hat p(y)=-log\hat p(y_\triangle)=-log\frac{e^{\theta_\triangle^Tx}}{\sum_{i\in class}e^{\theta_i^Tx}}<br>
+$$</p>
+<p>我们进行样本的训练并进行梯度下降以获得更小的熵。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://mashirokanon.github.io">Gomid</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://mashirokanon.github.io/2022/08/05/%E5%AF%B9%E5%9B%9E%E5%BD%92%E6%96%B9%E6%B3%95%E7%9A%84%E8%AE%A4%E8%AF%86/">https://mashirokanon.github.io/2022/08/05/%E5%AF%B9%E5%9B%9E%E5%BD%92%E6%96%B9%E6%B3%95%E7%9A%84%E8%AE%A4%E8%AF%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://mashirokanon.github.io" target="_blank">剑来</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92-%E6%89%B9%E9%87%8F%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/">线性回归&amp;&amp;批量梯度下降</a></div><div class="post_share"><div class="social-share" data-image="/img/MashiroKanon1.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/08/05/hello-world/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/cover2.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/MashiroKanon1.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Gomid</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://www.bilibili.com/"><i class="fab fa-bilibili"></i><span>一键摸鱼</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/MashiroKanon" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:z625462832@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">监督学习(Supervise learning)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">线性回归</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%90%E6%9C%AC%E5%87%BD%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">成本函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">最小均方算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">梯度下降法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="toc-number">3.1.1.</span> <span class="toc-text">批量梯度下降法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="toc-number">3.1.2.</span> <span class="toc-text">随机梯度下降法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">法方程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">最小二乘法(Least squares)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">概率解释</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">7.</span> <span class="toc-text">局部加权线性回归</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">8.</span> <span class="toc-text">逻辑回归</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">9.</span> <span class="toc-text">感知器学习算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">10.</span> <span class="toc-text">牛顿法解最大似然估计</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">11.</span> <span class="toc-text">广义线性模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E6%95%B0%E6%97%8F"><span class="toc-number">11.1.</span> <span class="toc-text">指数族</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="toc-number">11.2.</span> <span class="toc-text">构建广义线性模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Softmax%E5%9B%9E%E5%BD%92"><span class="toc-number">11.3.</span> <span class="toc-text">Softmax回归</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/05/%E5%AF%B9%E5%9B%9E%E5%BD%92%E6%96%B9%E6%B3%95%E7%9A%84%E8%AE%A4%E8%AF%86/" title="对回归方法的认识">对回归方法的认识</a><time datetime="2022-08-05T08:14:36.000Z" title="发表于 2022-08-05 16:14:36">2022-08-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/05/hello-world/" title="Hello World"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/cover2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2022/08/05/hello-world/" title="Hello World">Hello World</a><time datetime="2022-08-04T20:57:35.701Z" title="发表于 2022-08-05 04:57:35">2022-08-05</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/cover5.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2022 By Gomid</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
